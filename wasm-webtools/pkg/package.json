@@ -1,0 +1,15 @@
+{
+  "name": "wasm-webtools",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "wasm_webtools_bg.wasm",
+    "wasm_webtools.js",
+    "wasm_webtools.d.ts"
+  ],
+  "main": "wasm_webtools.js",
+  "types": "wasm_webtools.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "cd ./wasm-webtools && wasm-pack build --release --target web && cd .. && next build --turbopack",
+    "build": "next build --turbopack",
+    "prebuild": "wasm-pack build --release --target web && next build --turbopack",
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write"
