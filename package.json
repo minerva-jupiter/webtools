@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "prebuild": "wasm-pack build --release --target web && next build --turbopack",
+    "testbuild": "wasm-pack build --release --target web && next build --turbopack",
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write"
