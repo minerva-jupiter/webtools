@@ -1,15 +1,16 @@
-"use client";
-import init, { greet } from "../wasm-webtools/pkg/wasm_webtools";
-import { useEffect } from "react";
+import Link from "next/link";
 
 export default function Home() {
-  useEffect(() => {
-    init();
-  }, []);
   return (
     <main>
-      <h1>webtools</h1>
-      <button onClick={() => greet("App")}>greet</button>
+      <h1>Webtools</h1>
+      <h4>by Minerva_Juppiter</h4>
+      <br />
+      <ul>
+        <li>
+          <Link href="/password">Password Generator</Link>
+        </li>
+      </ul>
     </main>
   );
 }
