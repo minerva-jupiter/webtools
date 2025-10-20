@@ -69,10 +69,18 @@ export default function PasswordGenerator() {
     setSymbolFlags((prev) => ({ ...prev, [s]: !prev[s] }));
   };
 
-  // 一括選択/解除
   const setAllSymbols = (checked: boolean) => {
     setSymbolFlags(SYMBOLS.reduce((acc, s) => ({ ...acc, [s]: checked }), {}));
   };
+
+  async function copyToClip(password: string) {
+    try {
+      await navigator.clipboard.writeText(password);
+      alert("success copying to clipboard");
+    } catch (error) {
+      alert("fail to copying to clipboard" + error);
+    }
+  }
 
   return (
     <main>
@@ -119,10 +127,13 @@ export default function PasswordGenerator() {
       </div>
 
       <div style={{ marginTop: 12 }}>
-        <strong>Symbols (ASCII 33–126 非英数字):</strong>
+        <strong>Symbols:</strong>
         <div style={{ marginBottom: 8 }}>
-          <button onClick={() => setAllSymbols(true)}>Select All</button>
+          <button type="button" onClick={() => setAllSymbols(true)}>
+            Select All
+          </button>
           <button
+            type="button"
             onClick={() => setAllSymbols(false)}
             style={{ marginLeft: 8 }}
           >
@@ -146,7 +157,12 @@ export default function PasswordGenerator() {
         </div>
       </div>
 
-      <button onClick={generate} disabled={!wasm} style={{ marginTop: 12 }}>
+      <button
+        type="submit"
+        onClick={generate}
+        disabled={!wasm}
+        style={{ marginTop: 12 }}
+      >
         Generate
       </button>
 
@@ -162,6 +178,9 @@ export default function PasswordGenerator() {
           >
             {password}
           </div>
+          <button type="button" onClick={() => copyToClip(password)}>
+            Copy to ClipBoard
+          </button>
         </div>
       )}
     </main>
