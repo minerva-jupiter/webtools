@@ -5,11 +5,13 @@
   "files": [
     "wasm_webtools_bg.wasm",
     "wasm_webtools.js",
+    "wasm_webtools_bg.js",
     "wasm_webtools.d.ts"
   ],
   "main": "wasm_webtools.js",
   "types": "wasm_webtools.d.ts",
   "sideEffects": [
+    "./wasm_webtools.js",
     "./snippets/*"
   ]
 }
