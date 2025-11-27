@@ -34,7 +34,9 @@ export default function PasswordGenerator() {
 
   useEffect(() => {
     (async () => {
-      const wasmModule = await import("../../wasm-webtools/pkg/wasm_webtools.js");
+      const wasmModule = await import(
+        "../../wasm-webtools/pkg/wasm_webtools.js"
+      );
       setWasm(wasmModule);
     })();
   }, []);
