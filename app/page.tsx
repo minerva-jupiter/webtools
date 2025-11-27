@@ -10,6 +10,9 @@ export default function Home() {
         <li>
           <Link href="/password">Password Generator</Link>
         </li>
+        <li>
+          <Link href="/looper">Looper</Link>
+        </li>
       </ul>
     </main>
   );
