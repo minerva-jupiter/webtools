@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface MetronomeProps {
   bpm: number;
   count: number;
   bar: number;
-  isMetronomeEnable: boolean;
-  setIsMetronomeEnable: React.Dispatch<React.SetStateAction<boolean>>;
-  isPlaying: boolean; // Changed from isPlay
+  isPlaying: boolean;
   elapsedTime: number;
   currentMeasureBeat: string;
 }
@@ -17,8 +15,6 @@ export default function Metronome({
   bpm,
   count,
   bar,
-  isMetronomeEnable,
-  setIsMetronomeEnable,
   isPlaying,
   elapsedTime,
   currentMeasureBeat,
@@ -29,10 +25,10 @@ export default function Metronome({
   const lookahead = 25.0;
   const scheduleAheadTime = 0.1;
   const timerIdRef = useRef<number | null>(null);
+  const [isMetronomeEnable, setIsMetronomeEnable] = useState(false);
 
   useEffect(() => {
     if (isMetronomeEnable && isPlaying) {
-      // Changed from isPlay
       if (audioContextRef.current === null) {
         audioContextRef.current = new (
           window.AudioContext || (window as any).webkitAudioContext

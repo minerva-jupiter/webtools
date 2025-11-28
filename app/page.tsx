@@ -13,6 +13,9 @@ export default function Home() {
         <li>
           <Link href="/looper">Looper</Link>
         </li>
+        <li>
+          <Link href="/oilart">Oil Art Generator</Link>
+        </li>
       </ul>
     </main>
   );
