@@ -4,14 +4,14 @@ import { useState, useEffect, useRef } from "react";
 import React from "react";
 import Metronome from "./metronome";
 import Setting from "./setting";
-import Recorder from "./recorder";
+import Rhythm from "./rhythm";
+import Track from "./track";
 
 export default function Looper() {
   const [bpm, setBpm] = useState<number>(120);
   const [count, setCount] = useState<number>(4);
   const [bar, setBar] = useState<number>(4);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [isMetronomeEnable, setIsMetronomeEnable] = useState<boolean>(false);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [currentMeasureBeat, setCurrentMeasureBeat] =
     useState<string>("0小節 0拍目");
@@ -65,7 +65,10 @@ export default function Looper() {
         display: "flex",
         flexDirection: "column",
         height: "100vh",
-        width: "100vw",
+        width: "100%",
+        margin: 0,
+        padding: 0,
+        boxSizing: "border-box",
       }}
     >
       <h1 style={{ textAlign: "center", margin: "10px 0" }}>Looper</h1>
@@ -75,7 +78,7 @@ export default function Looper() {
           display: "flex",
           justifyContent: "space-around",
           alignItems: "flex-start",
-          flexGrow: 1,
+          flexGrow: 4,
           padding: "20px",
           gap: "20px",
         }}
@@ -99,12 +102,12 @@ export default function Looper() {
           elapsedTime={elapsedTime}
           currentMeasureBeat={currentMeasureBeat}
         />
-        <Recorder
+        <Rhythm
           bpm={bpm}
           count={count}
           bar={bar}
           elapsedTime={elapsedTime}
-          currentMeasureBeat={currentMeasureBeat}
+          isPlaying={isPlaying}
         />
       </div>
 
@@ -113,43 +116,24 @@ export default function Looper() {
           display: "flex",
           justifyContent: "space-around",
           alignItems: "stretch",
-          flexGrow: 1,
+          flexGrow: 7,
           borderTop: "1px solid #eee",
           padding: "20px",
           position: "relative",
           gap: "20px",
         }}
       >
-        <div
-          style={{
-            border: "1px dashed #ccc",
-            padding: "20px",
-            width: "40vw",
-            minHeight: "300px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "#f9f9f9",
-          }}
-        >
-          <h3>ミキサー (未実装)</h3>
-        </div>
-        <div
-          style={{
-            border: "1px dashed #ccc",
-            padding: "20px",
-            width: "40vw",
-            minHeight: "300px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "#f9f9f9",
-          }}
-        >
-          <h3>ルーパー・トラック (未実装)</h3>
-        </div>
+        {[...Array(5)].map((index, id) => (
+          <Track
+            key={index}
+            id={id}
+            bpm={bpm}
+            count={count}
+            bar={bar}
+            elapsedTime={elapsedTime}
+            isPlaying={isPlaying}
+          />
+        ))}
       </div>
     </main>
   );
