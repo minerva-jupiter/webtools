@@ -1,0 +1,100 @@
+.track {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #f9f9f9;
+    width: 150px;
+    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.track h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+}
+
+.button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.recordPlayButton.stop {
+    background-color: #7d7d7d;
+}
+.recordPlayButton.stop:hover {
+    background-color: #9c9c9c;
+}
+
+.recordPlayButton.record {
+    background-color: #ff4136; /* Red */
+}
+.recordPlayButton.record:hover {
+    background-color: #ff7d75;
+}
+
+.recordPlayButton.play {
+    background-color: #2ecc40; /* Green */
+}
+.recordPlayButton.play:hover {
+    background-color: #72d97e;
+}
+
+.stopButton {
+    background-color: #555;
+}
+
+.stopButton:hover {
+    background-color: #777;
+}
+
+.volumeSlider {
+    -webkit-appearance: slider-vertical;
+    width: 20px;
+    height: 100px;
+    cursor: pointer;
+}
+
+.status {
+    margin-top: 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+.status.stop {
+    background-color: #eee;
+    color: #333;
+}
+
+.status.record {
+    background-color: #ff4136;
+    color: white;
+    animation: blink 1s infinite;
+}
+
+.status.play {
+    background-color: #2ecc40;
+    color: white;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0.5;
+    }
+}

@@ -9,6 +9,7 @@ interface MetronomeProps {
   isPlaying: boolean;
   elapsedTime: number;
   currentMeasureBeat: string;
+  audioContext: AudioContext | null;
 }
 
 export default function Metronome({
@@ -18,8 +19,8 @@ export default function Metronome({
   isPlaying,
   elapsedTime,
   currentMeasureBeat,
+  audioContext,
 }: MetronomeProps) {
-  const audioContextRef = useRef<AudioContext | null>(null);
   const nextBeatTimeRef = useRef<number>(0);
   const currentBeatRef = useRef<number>(0);
   const lookahead = 25.0;
@@ -27,45 +28,12 @@ export default function Metronome({
   const timerIdRef = useRef<number | null>(null);
   const [isMetronomeEnable, setIsMetronomeEnable] = useState(false);
 
-  useEffect(() => {
-    if (isMetronomeEnable && isPlaying) {
-      if (audioContextRef.current === null) {
-        audioContextRef.current = new (
-          window.AudioContext || (window as any).webkitAudioContext
-        )();
-      }
-      nextBeatTimeRef.current = audioContextRef.current.currentTime;
-      currentBeatRef.current = 0;
-      timerIdRef.current = window.setInterval(scheduler, lookahead);
-    } else {
-      if (timerIdRef.current) {
-        window.clearInterval(timerIdRef.current);
-        timerIdRef.current = null;
-      }
-      if (audioContextRef.current) {
-        audioContextRef.current.close().then(() => {
-          audioContextRef.current = null;
-        });
-      }
-    }
-    return () => {
-      if (timerIdRef.current) {
-        window.clearInterval(timerIdRef.current);
-        timerIdRef.current = null;
-      }
-      if (audioContextRef.current) {
-        audioContextRef.current.close().then(() => {
-          audioContextRef.current = null;
-        });
-      }
-    };
-  }, [isMetronomeEnable, isPlaying, bpm, count, bar]);
   const scheduler = () => {
-    if (audioContextRef.current === null) return;
+    if (audioContext === null) return;
 
     while (
       nextBeatTimeRef.current <
-      audioContextRef.current.currentTime + scheduleAheadTime
+      audioContext.currentTime + scheduleAheadTime
     ) {
       scheduleBeat(nextBeatTimeRef.current);
       nextBeat();
@@ -79,13 +47,13 @@ export default function Metronome({
   };
 
   const scheduleBeat = (beatTime: number) => {
-    if (audioContextRef.current === null) return;
+    if (audioContext === null) return;
 
-    const oscillator = audioContextRef.current.createOscillator();
-    const gainNode = audioContextRef.current.createGain();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
 
     oscillator.connect(gainNode);
-    gainNode.connect(audioContextRef.current.destination);
+    gainNode.connect(audioContext.destination);
 
     if (currentBeatRef.current % count === 0) {
       oscillator.frequency.setValueAtTime(880, beatTime);
@@ -99,6 +67,33 @@ export default function Metronome({
     gainNode.gain.exponentialRampToValueAtTime(0.001, beatTime + 0.05);
     oscillator.stop(beatTime + 0.05);
   };
+
+  useEffect(() => {
+    if (isMetronomeEnable && isPlaying && audioContext) {
+      const secondsPerBeat = 60.0 / bpm;
+      const timeIntoCurrentBeat = elapsedTime % secondsPerBeat;
+      const timeUntilNextBeat = secondsPerBeat - timeIntoCurrentBeat;
+      nextBeatTimeRef.current = audioContext.currentTime + timeUntilNextBeat;
+
+      const totalBeatsSoFar = Math.floor(elapsedTime / secondsPerBeat);
+      currentBeatRef.current = (totalBeatsSoFar + 1) % count;
+      timerIdRef.current = window.setInterval(scheduler, lookahead);
+    }
+    return () => {
+      if (timerIdRef.current) {
+        window.clearInterval(timerIdRef.current);
+        timerIdRef.current = null;
+      }
+    };
+  }, [
+    isMetronomeEnable,
+    isPlaying,
+    bpm,
+    count,
+    bar,
+    audioContext,
+    elapsedTime,
+  ]);
 
   return (
     <article

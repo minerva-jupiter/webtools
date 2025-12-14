@@ -18,6 +18,19 @@ export default function Looper() {
 
   const startTimeRef = useRef<number>(0);
   const animationFrameIdRef = useRef<number | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && !audioContextRef.current) {
+      try {
+        audioContextRef.current = new (
+          window.AudioContext || (window as any).webkitAudioContext
+        )();
+      } catch (e) {
+        console.error("Web Audio API is not supported in this browser.", e);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (isPlaying) {
@@ -55,6 +68,9 @@ export default function Looper() {
       setElapsedTime(0);
       setCurrentMeasureBeat("0小節 0拍目");
     } else {
+      if (audioContextRef.current?.state === "suspended") {
+        audioContextRef.current.resume();
+      }
       setIsPlaying(true);
     }
   };
@@ -78,7 +94,7 @@ export default function Looper() {
           display: "flex",
           justifyContent: "space-around",
           alignItems: "flex-start",
-          flexGrow: 4,
+          flexGrow: 1,
           padding: "20px",
           gap: "20px",
         }}
@@ -101,6 +117,7 @@ export default function Looper() {
           isPlaying={isPlaying}
           elapsedTime={elapsedTime}
           currentMeasureBeat={currentMeasureBeat}
+          audioContext={audioContextRef.current}
         />
         <Rhythm
           bpm={bpm}
@@ -116,22 +133,23 @@ export default function Looper() {
           display: "flex",
           justifyContent: "space-around",
           alignItems: "stretch",
-          flexGrow: 7,
+          flexGrow: 9,
           borderTop: "1px solid #eee",
           padding: "20px",
           position: "relative",
           gap: "20px",
         }}
       >
-        {[...Array(5)].map((index, id) => (
+        {[...Array(5)].map((_, id) => (
           <Track
-            key={index}
+            key={id}
             id={id}
             bpm={bpm}
             count={count}
             bar={bar}
             elapsedTime={elapsedTime}
             isPlaying={isPlaying}
+            audioContext={audioContextRef.current}
           />
         ))}
       </div>
