@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface MetronomeProps {
   bpm: number;
@@ -28,7 +28,38 @@ export default function Metronome({
   const timerIdRef = useRef<number | null>(null);
   const [isMetronomeEnable, setIsMetronomeEnable] = useState(false);
 
-  const scheduler = () => {
+  const nextBeat = useCallback(() => {
+    const secondsPerBeat = 60.0 / bpm;
+    nextBeatTimeRef.current += secondsPerBeat;
+    currentBeatRef.current = (currentBeatRef.current + 1) % count;
+  }, [bpm, count]);
+
+  const scheduleBeat = useCallback(
+    (beatTime: number) => {
+      if (audioContext === null) return;
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      if (currentBeatRef.current % count === 0) {
+        oscillator.frequency.setValueAtTime(880, beatTime);
+        gainNode.gain.setValueAtTime(1, beatTime);
+      } else {
+        oscillator.frequency.setValueAtTime(440, beatTime);
+        gainNode.gain.setValueAtTime(0.5, beatTime);
+      }
+
+      oscillator.start(beatTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, beatTime + 0.05);
+      oscillator.stop(beatTime + 0.05);
+    },
+    [audioContext, count],
+  );
+
+  const scheduler = useCallback(() => {
     if (audioContext === null) return;
 
     while (
@@ -38,35 +69,7 @@ export default function Metronome({
       scheduleBeat(nextBeatTimeRef.current);
       nextBeat();
     }
-  };
-
-  const nextBeat = () => {
-    const secondsPerBeat = 60.0 / bpm;
-    nextBeatTimeRef.current += secondsPerBeat;
-    currentBeatRef.current = (currentBeatRef.current + 1) % count;
-  };
-
-  const scheduleBeat = (beatTime: number) => {
-    if (audioContext === null) return;
-
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    if (currentBeatRef.current % count === 0) {
-      oscillator.frequency.setValueAtTime(880, beatTime);
-      gainNode.gain.setValueAtTime(1, beatTime);
-    } else {
-      oscillator.frequency.setValueAtTime(440, beatTime);
-      gainNode.gain.setValueAtTime(0.5, beatTime);
-    }
-
-    oscillator.start(beatTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, beatTime + 0.05);
-    oscillator.stop(beatTime + 0.05);
-  };
+  }, [audioContext, scheduleBeat, nextBeat]);
 
   useEffect(() => {
     if (isMetronomeEnable && isPlaying && audioContext) {
@@ -77,7 +80,10 @@ export default function Metronome({
 
       const totalBeatsSoFar = Math.floor(elapsedTime / secondsPerBeat);
       currentBeatRef.current = (totalBeatsSoFar + 1) % count;
-      timerIdRef.current = window.setInterval(scheduler, lookahead);
+
+      if (timerIdRef.current === null) {
+        timerIdRef.current = window.setInterval(scheduler, lookahead);
+      }
     }
     return () => {
       if (timerIdRef.current) {
@@ -90,9 +96,9 @@ export default function Metronome({
     isPlaying,
     bpm,
     count,
-    bar,
     audioContext,
     elapsedTime,
+    scheduler,
   ]);
 
   return (
@@ -201,7 +207,9 @@ export default function Metronome({
         }}
       >
         <p style={{ margin: 0 }}>Elapsed Time: {elapsedTime.toFixed(2)}s</p>
-        <p style={{ margin: 0 }}>Current Beat: {currentMeasureBeat}</p>
+        <p style={{ margin: 0 }}>
+          Current Beat: {currentMeasureBeat[0]}小節 {currentMeasureBeat[1]}拍目
+        </p>
       </div>
     </article>
   );

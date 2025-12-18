@@ -13,24 +13,13 @@ export default function Looper() {
   const [bar, setBar] = useState<number>(4);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
-  const [currentMeasureBeat, setCurrentMeasureBeat] =
-    useState<string>("0小節 0拍目");
+  const [currentMeasureBeat, setCurrentMeasureBeat] = useState<
+    [number, number]
+  >([0, 0]);
 
   const startTimeRef = useRef<number>(0);
   const animationFrameIdRef = useRef<number | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && !audioContextRef.current) {
-      try {
-        audioContextRef.current = new (
-          window.AudioContext || (window as any).webkitAudioContext
-        )();
-      } catch (e) {
-        console.error("Web Audio API is not supported in this browser.", e);
-      }
-    }
-  }, []);
 
   useEffect(() => {
     if (isPlaying) {
@@ -43,9 +32,7 @@ export default function Looper() {
         const totalBeats = Math.floor(newElapsedTime * beatsPerSecond);
         const currentBeatInBar = totalBeats % count;
         const currentMeasure = Math.floor(totalBeats / count) % bar;
-        setCurrentMeasureBeat(
-          `${currentMeasure + 1}小節 ${currentBeatInBar + 1}拍目`,
-        );
+        setCurrentMeasureBeat([currentMeasure + 1, currentBeatInBar + 1]);
 
         animationFrameIdRef.current = requestAnimationFrame(animate);
       };
@@ -61,6 +48,10 @@ export default function Looper() {
       }
     };
   }, [isPlaying, bpm, count, bar]);
+
+  useEffect(() => {
+    //check loop is ended and call track's end function
+  });
 
   const handlePlayToggle = () => {
     if (isPlaying) {

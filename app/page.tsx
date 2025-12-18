@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main>
+    <main style={{ padding: "2rem" }}>
       <h1>Webtools</h1>
       <h4>by Minerva_Juppiter</h4>
       <br />
