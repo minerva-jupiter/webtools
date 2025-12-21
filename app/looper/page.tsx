@@ -49,15 +49,11 @@ export default function Looper() {
     };
   }, [isPlaying, bpm, count, bar]);
 
-  useEffect(() => {
-    //check loop is ended and call track's end function
-  });
-
   const handlePlayToggle = () => {
     if (isPlaying) {
       setIsPlaying(false);
       setElapsedTime(0);
-      setCurrentMeasureBeat("0小節 0拍目");
+      setCurrentMeasureBeat([0, 0]);
     } else {
       if (audioContextRef.current?.state === "suspended") {
         audioContextRef.current.resume();
@@ -135,12 +131,8 @@ export default function Looper() {
           <Track
             key={id}
             id={id}
-            bpm={bpm}
-            count={count}
-            bar={bar}
-            elapsedTime={elapsedTime}
             isPlaying={isPlaying}
-            audioContext={audioContextRef.current}
+            currentMeasureBeat={currentMeasureBeat}
           />
         ))}
       </div>

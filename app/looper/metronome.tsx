@@ -8,7 +8,7 @@ interface MetronomeProps {
   bar: number;
   isPlaying: boolean;
   elapsedTime: number;
-  currentMeasureBeat: string;
+  currentMeasureBeat: [number, number];
   audioContext: AudioContext | null;
 }
 

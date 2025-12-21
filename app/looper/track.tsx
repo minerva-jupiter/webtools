@@ -1,19 +1,25 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "./track.module.css";
 
 interface TrackProps {
   id: number;
   isPlaying: boolean;
+  currentMeasureBeat: [number, number];
 }
 
-export default function Track({ id, isPlaying: isMasterPlaying }: TrackProps) {
+export default function Track({
+  id,
+  isPlaying: isMasterPlaying,
+  currentMeasureBeat,
+}: TrackProps) {
   const [volume, setVolume] = useState(1);
   const [trackState, setTrackState] = useState<
     "stop" | "ready" | "record" | "play"
   >("stop");
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const prevMeasureBeatRef = useRef<[number, number]>([0, 0]);
 
   useEffect(() => {
     setAudio(new Audio("/drums.flac"));
@@ -39,6 +45,22 @@ export default function Track({ id, isPlaying: isMasterPlaying }: TrackProps) {
   const handleStop = () => {
     setTrackState("stop");
   };
+
+  useEffect(() => {
+    const [measure, beat] = currentMeasureBeat;
+    const [prevMeasure, prevBeat] = prevMeasureBeatRef.current;
+
+    if (isMasterPlaying && measure === 1 && beat === 1) {
+      if (prevMeasure !== 1 || prevBeat !== 1) {
+        if (trackState === "ready") {
+          setTrackState("record");
+        } else if (trackState === "record") {
+          setTrackState("play");
+        }
+      }
+    }
+    prevMeasureBeatRef.current = currentMeasureBeat;
+  }, [currentMeasureBeat, isMasterPlaying, trackState]);
 
   useEffect(() => {
     if (!audio) {
