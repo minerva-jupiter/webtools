@@ -13,6 +13,9 @@ export default function Home() {
         <li>
           <Link href="/time-translate">Time Translate</Link>
         </li>
+        <li>
+          <Link href="/audio-analysis">Audio Analysis</Link>
+        </li>
       </ul>
     </main>
   );
