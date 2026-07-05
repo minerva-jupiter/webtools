@@ -16,6 +16,9 @@ export default function Home() {
         <li>
           <Link href="/audio-analysis">Audio Analysis</Link>
         </li>
+        <li>
+          <Link href="/char-count">Count Characters</Link>
+        </li>
       </ul>
     </main>
   );
