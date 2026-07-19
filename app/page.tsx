@@ -19,6 +19,9 @@ export default function Home() {
         <li>
           <Link href="/char-count">Count Characters</Link>
         </li>
+        <li>
+          <Link href="/nfc">NFC Scanner</Link>
+        </li>
       </ul>
     </main>
   );
