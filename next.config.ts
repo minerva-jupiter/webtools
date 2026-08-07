@@ -1,8 +1,12 @@
 
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
+import { experimental_generateTypes } from "wrangler";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    useTypeScriptCli: true
+  }
   /* config options here */
 };
 
@@ -38,4 +42,3 @@ export default withSentryConfig(nextConfig, {
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
 });
-

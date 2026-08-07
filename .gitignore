@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -40,9 +41,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/wasm-webtools/target*
+# OpenNext
+/.open-next
 
-# Sentry Config File
-.env.sentry-build-plugin
+# wrangler files
+.wrangler
+.dev.vars*
 
-bun.lock
+
+!.dev.vars.example
