@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Time Translate - Webtools</title>
+  </head>
+  <body>
+    <main>
+      <h2>Time Translate</h2>
+      <button type="button" id="set-now" style="margin-bottom: 16px;">
+        Set to Current Time
+      </button>
+
+      <div style="margin-top: 12px;">
+        <strong>Milliseconds (Unix Timestamp ms):</strong>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+          <input
+            type="text"
+            id="field-ms"
+            data-key="ms"
+            style="flex: 1; font-family: monospace; padding: 8px; border: 1px solid #ddd;"
+          >
+          <button type="button" data-copy="ms">Copy</button>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <strong>ISO 8601:</strong>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+          <input
+            type="text"
+            id="field-iso"
+            data-key="iso"
+            style="flex: 1; font-family: monospace; padding: 8px; border: 1px solid #ddd;"
+          >
+          <button type="button" data-copy="iso">Copy</button>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <strong>UTC:</strong>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+          <input
+            type="text"
+            id="field-utc"
+            data-key="utc"
+            style="flex: 1; font-family: monospace; padding: 8px; border: 1px solid #ddd;"
+          >
+          <button type="button" data-copy="utc">Copy</button>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <strong>JST (Japan Standard Time):</strong>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+          <input
+            type="text"
+            id="field-jst"
+            data-key="jst"
+            style="flex: 1; font-family: monospace; padding: 8px; border: 1px solid #ddd;"
+          >
+          <button type="button" data-copy="jst">Copy</button>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <strong>Local Time:</strong>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+          <input
+            type="text"
+            id="field-local"
+            data-key="local"
+            style="flex: 1; font-family: monospace; padding: 8px; border: 1px solid #ddd;"
+          >
+          <button type="button" data-copy="local">Copy</button>
+        </div>
+      </div>
+
+      <div id="invalid-warning" style="color: red; margin-top: 12px; display: none;">
+        Invalid Input
+      </div>
+    </main>
+
+    <script>
+      const inputs = {
+        ms: document.getElementById("field-ms"),
+        iso: document.getElementById("field-iso"),
+        utc: document.getElementById("field-utc"),
+        jst: document.getElementById("field-jst"),
+        local: document.getElementById("field-local")
+      };
+
+      const invalidWarning = document.getElementById("invalid-warning");
+
+      const updateAllFromDate = (d, excludeKey) => {
+        if (isNaN(d.getTime())) return;
+
+        const values = {
+          ms: d.getTime().toString(),
+          iso: d.toISOString(),
+          utc: d.toUTCString(),
+          jst: d.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }),
+          local: d.toLocaleString()
+        };
+
+        for (const [key, input] of Object.entries(inputs)) {
+          if (key !== excludeKey) {
+            input.value = values[key];
+          }
+        }
+
+        invalidWarning.style.display = "none";
+      };
+
+      const parseDate = (key, val) => {
+        if (!val.trim()) return null;
+
+        if (key === "ms") {
+          return new Date(Number.parseInt(val, 10));
+        }
+
+        if (key === "jst") {
+          let parseable = val;
+          if (/^\d{4}/.test(val) && !/[Z+-]/.test(val)) {
+            parseable = `${val} GMT+0900`;
+          }
+          return new Date(parseable);
+        }
+
+        return new Date(val);
+      };
+
+      const handleInput = (event) => {
+        const key = event.target.dataset.key;
+        const val = event.target.value;
+        const d = parseDate(key, val);
+
+        if (d && !isNaN(d.getTime())) {
+          updateAllFromDate(d, key);
+        } else {
+          invalidWarning.style.display = "block";
+        }
+      };
+
+      for (const input of Object.values(inputs)) {
+        input.addEventListener("input", handleInput);
+      }
+
+      document.getElementById("set-now").addEventListener("click", () => {
+        updateAllFromDate(new Date());
+      });
+
+      const copyToClip = async (text) => {
+        try {
+          await navigator.clipboard.writeText(text);
+          alert("success copying to clipboard");
+        } catch (error) {
+          alert(`fail to copying to clipboard: ${error}`);
+        }
+      };
+
+      document.querySelectorAll("[data-copy]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const key = btn.dataset.copy;
+          copyToClip(inputs[key].value);
+        });
+      });
+
+      updateAllFromDate(new Date());
+    </script>
+  </body>
+</html>
