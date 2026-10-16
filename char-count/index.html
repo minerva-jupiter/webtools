@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Webtools by Minerva Juppiter</title>
+    <meta name="description" content="Webtools by minerva-jupiter">
+  </head>
+  <body>
+    <main>
+        <h1>Count Characters</h1>
+        <textarea
+          id="text-input"
+          placeholder="ここにテキストを入力してください..."
+          rows="10"
+          cols="50"
+        ></textarea>
+        <div>
+            <h2>文字数カウント結果:</h2>
+            <ul>
+                <li>改行と空白を含む文字数: <span id="with-newlines">0</span></li>
+                <li>改行を含まない文字数: <span id="without-newlines">0</span></li>
+                <li>空白を含まない文字数: <span id="without-whitespace">0</span></li>
+                <li>改行と空白を含まない文字数: <span id="without-newlines-whitespace">0</span></li>
+                <li>単語数: <span id="words-count">0</span></li>
+            </ul>
+       </div>
+    </main>
+    <script>
+      const textInput = document.getElementById("text-input");
+      const withNewlinesElem = document.getElementById("with-newlines");
+      const withoutNewlinesElem = document.getElementById("without-newlines");
+      const withoutWhitespaceElem = document.getElementById("without-whitespace");
+      const withoutNewlinesWhitespaceElem = document.getElementById("without-newlines-whitespace");
+      const wordsCountElem = document.getElementById("words-count");
+
+      const countCharsWithNewlines = (str) => str.length;
+      const countCharsWithoutNewlines = (str) => str.replace(/\n/g, "").length;
+      const countCharsWithoutWhitespace = (str) => str.replace(/\s/g, "").length;
+      const countCharsWithoutNewlinesWithWhitespace = (str) =>
+        str.replace(/\n/g, "").replace(/\s/g, "").length;
+      const countWords = (str) => {
+        const words = str.trim().split(/\s+/);
+        return words[0] === "" ? 0 : words.length;
+      };
+
+      const updateCounts = () => {
+        const text = textInput.value;
+        withNewlinesElem.textContent = countCharsWithNewlines(text);
+        withoutNewlinesElem.textContent = countCharsWithoutNewlines(text);
+        withoutWhitespaceElem.textContent = countCharsWithoutWhitespace(text);
+        withoutNewlinesWhitespaceElem.textContent = countCharsWithoutNewlinesWithWhitespace(text);
+        wordsCountElem.textContent = countWords(text);
+      };
+
+      textInput.addEventListener("input", updateCounts);
+    </script>
+  </body>
+</html>
